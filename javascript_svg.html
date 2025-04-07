@@ -1,0 +1,124 @@
+<!--Anderson André Ferreira Gomes
+Guilherme José Almeida Nunes-->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inflação Mensal 2024 - IPCA vs IGP-M</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h2 {
+      text-align: center;
+    }
+    svg {
+      background: #fff;
+      border: 1px solid #ccc;
+      display: block;
+      margin: 0 auto;
+    }
+    .label {
+      font-size: 10px;
+      fill: #000;
+      font-weight: bold;
+    }
+
+    .legend {
+      font-size: 14px;
+    }
+
+    .axis {
+      stroke: #000;
+      stroke-width: 1;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Inflação Mensal 2024: IPCA vs IGP-M</h2>
+
+<svg id="grafico" width="900" height="500"></svg>
+
+<script>
+  const dados = [
+    { mes: "Jan", ipca: 0.42, igpm: 0.07 },
+    { mes: "Fev", ipca: 0.83, igpm: -0.52 },
+    { mes: "Mar", ipca: 0.16, igpm: -0.47 },
+    { mes: "Abr", ipca: 0.31, igpm: 0.31 },
+    { mes: "Mai", ipca: 0.46, igpm: 0.89 },
+    { mes: "Jun", ipca: 0.62, igpm: 0.81 },
+    { mes: "Jul", ipca: 0.12, igpm: 0.61 },
+    { mes: "Ago", ipca: 0.23, igpm: 0.29 },
+    { mes: "Set", ipca: 0.44, igpm: 0.62 },
+    { mes: "Out", ipca: 0.59, igpm: 1.52 },
+    { mes: "Nov", ipca: 0.28, igpm: 1.30 },
+    { mes: "Dez", ipca: 0.34, igpm: 0.94 },
+  ];
+
+  const svg = document.getElementById("grafico");
+  const larguraBarra = 20;
+  const espacamento = 70;
+  const margemEsquerda = 50;
+  const baseY = 250;
+  const escala = 150;
+
+  // Eixo Y
+  svg.innerHTML += '<line x1="'+(margemEsquerda - 10)+'" y1="0" x2="'+margemEsquerda+'" y2="500" class="axis" />';
+
+  // Eixo X (zero)
+  svg.innerHTML += '<line x1="'+(margemEsquerda-10)+'" y1="'+baseY+'" x2="900" y2="'+baseY+'" class="axis" />';
+
+
+  // Linhas horizontais (Causando erro no eixo X)
+  for (let i = -1.5; i <= 1.5; i += 0.5) {
+    if (i === 0) continue; // Pular a li    nha do eixo X
+    const y = baseY - i * escala;
+    svg.innerHTML += '<line x1="'+(margemEsquerda-10)+'" y1="'+y+'" x2="900" y2="'+y+'" stroke="#ddd" stroke-width="2" stroke-dasharray="2       " />';
+   svg.innerHTML += '<text x="'+(margemEsquerda - 30)+'" y="'+(y + 4)+'" class="label">'+i+'%</text>';
+  }
+
+  // Desenhar barras primeiro
+  dados.forEach((dado, i) => {
+    const xBase = (margemEsquerda + i * espacamento);
+    // IPCA
+    const alturaIpca = dado.ipca * escala;
+    const yIpca = (dado.ipca>= 0)?(baseY - alturaIpca):baseY;
+    svg.innerHTML += '<rect x="'+xBase+'" y="'+yIpca+'" width="'+larguraBarra+'" height="'+Math.abs(alturaIpca)+'" fill="#4caf50" />';
+    // IGP-M
+    const alturaIgpm = dado.igpm * escala;
+    const yIgpm = (dado.igpm>= 0)?(baseY - alturaIgpm):baseY;
+    svg.innerHTML += '<rect x="'+(xBase + larguraBarra)+'" y="'+yIgpm+'" width="'+larguraBarra+'" height="'+Math.abs(alturaIgpm)+'" fill="#2196f3" />';
+    // Nome do mês
+    svg.innerHTML += '<text x="'+(xBase + 10)+'" y="'+(baseY + 15)+'" class="label">'+dado.mes+'</text>';});
+
+     // Depois, desenhar os textos dos valores (por cima)
+  dados.forEach((dado, i) => {
+    const xBase = margemEsquerda + i * espacamento;
+    // IPCA
+    const alturaIpca = dado.ipca * escala;
+    const yIpca = baseY - alturaIpca;
+    svg.innerHTML += '<text x="'+(xBase - 5)+'" y="'+(yIpca - 5)+'" class="label">'+dado.ipca.toFixed(2)+'%</text>';
+    // IGP-M
+    const alturaIgpm = dado.igpm * escala;
+    const yIgpm = dado.igpm >= 0 ? baseY - alturaIgpm : baseY + Math.abs(alturaIgpm) + 12;
+    svg.innerHTML += '<text x="'+(xBase + larguraBarra + 5)+'" y="'+yIgpm+'" class="label">'+dado.igpm.toFixed(2)+'%</text>';
+  });
+
+  // Legenda
+  svg.innerHTML += `
+    <rect x="760" y="390" width="18" height="18" fill="#4caf50" />
+    <text x="780" y="403" class="label legend">IPCA</text>
+
+    <rect x="760" y="410" width="18" height="18" fill="#2196f3" />
+    <text x="780" y="423" class="label legend">IGP-M</text>
+  `;
+
+
+</script>
+
+</body>
+</html>
